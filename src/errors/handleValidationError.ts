@@ -13,7 +13,7 @@ const handleValidationError = (
       };
     }
   );
-  const statusCode = 400;
+  const statusCode = 422;
   return {
     statusCode,
     message: 'Validation Error',
