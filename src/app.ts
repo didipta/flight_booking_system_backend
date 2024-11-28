@@ -13,7 +13,10 @@ app.use("/api/v1", router);
 
 app.use(globalErrorHandler);
 
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((err:Error,req: Request, res: Response, next: NextFunction) => {
+  if (res.headersSent) {
+    return next(err);
+  }
   res.status(httpStatus.NOTFOUND || 404).json({
     success: false,
     message: "Not Found",

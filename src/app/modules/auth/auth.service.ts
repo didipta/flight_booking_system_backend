@@ -5,11 +5,12 @@ import { httpStatus } from "../../healper/http.status";
 import { jwtHelpers } from "../../healper/jwtHelpers";
 import { User } from "../users/user.model";
 import { ILoginUser, ILoginUserResponse } from "./auth.interface";
+import { IUser } from "../users/user.interface";
 
 const loginuser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
-  const { phoneNumber, password } = payload;
+  const { email, password } = payload;
 
-  const isuserExist = await User.isUserExist(phoneNumber);
+  const isuserExist = await User.isUserExist(email);
 
   if (!isuserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
@@ -22,9 +23,9 @@ const loginuser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Password is incorrect");
   }
 
-  const { email, role } = isuserExist;
+  const { email: emails, role, _id:id } = isuserExist;
   const accessToken = jwtHelpers.createToken(
-    { email, role },
+    { emails, role , id },
     config.jwt_secret as Secret,
     config.jwt_expire_time as string
   );
@@ -33,7 +34,12 @@ const loginuser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
     accessToken,
   };
 };
+const getmyprofile = async (email: string): Promise<IUser | null> => {
+  const result = await User.findOne({ email });
+  return result;
+};
 
 export const authService = {
   loginuser,
+  getmyprofile,
 };

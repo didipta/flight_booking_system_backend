@@ -1,8 +1,7 @@
 import { IRole } from "../users/user.interface";
 
-
 export type ILoginUser = {
-  phoneNumber: string;
+  email: string;
   password: string;
 };
 export type ILoginUserResponse = {
@@ -13,4 +12,3 @@ export type IVerifiedLoginUser = {
   userId: string;
   role: IRole;
 };
-

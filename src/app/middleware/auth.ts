@@ -5,6 +5,7 @@ import ApiError from "../../errors/ApiError";
 import { Secret } from "jsonwebtoken";
 import { jwtHelpers } from "../healper/jwtHelpers";
 import { User } from "../modules/users/user.model";
+import { tokenuserget } from "../healper/tokenuserget";
 
 const auth =
   (...requiredRoles: string[]) =>
@@ -12,24 +13,18 @@ const auth =
     try {
       // Get authorization token
       const token = req.headers.authorization;
-      if (!token) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
-      }
 
       // Verify token
-      const verifiedUser = jwtHelpers.verifyToken(
-        token,
-        config.jwt_secret as Secret
-      );
+      const verifiedUser = await tokenuserget(token as string);
 
       // Role-based access control
-      if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-        throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+      if (requiredRoles.length && !requiredRoles.includes(verifiedUser?.role)) {
+        throw new ApiError(httpStatus.FORBIDDEN || 403, "Forbidden");
       }
 
       // Check if the user exists using the phone number
-      const { email } = verifiedUser;
-      const isUserExist = await User.isUserExist(email);
+      const { emails } = verifiedUser;
+      const isUserExist = await User.isUserExist(emails);
       if (!isUserExist) {
         throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
       }

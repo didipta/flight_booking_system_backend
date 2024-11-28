@@ -7,15 +7,17 @@ import { UserController } from "../users/user.controller";
 const router = express.Router();
 
 router.post(
+  "/register",
+  validateRequest(uservalidation),
+  UserController.createUser
+);
+
+router.post(
   "/login",
   validateRequest(AuthValidation.loginZodSchema),
   authColtroller.loginuser
 );
 
-router.post(
-  "/sign-up",
-  validateRequest(uservalidation),
-  UserController.createUser
-);
+router.get('/me', authColtroller.getauthUser);
 
 export const AuthRouter = router;
