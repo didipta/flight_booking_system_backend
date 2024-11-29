@@ -15,7 +15,7 @@ const loginuser = catchAsync(
     try {
       const { ...loginData } = req.body;
       const result = await authService.loginuser(loginData);
-      const {...others } = result;
+      const { ...others } = result;
 
       sendResponse<ILoginUserResponse>(res, {
         statusCode: 200,
@@ -29,23 +29,24 @@ const loginuser = catchAsync(
   }
 );
 
-const getauthUser = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
-  try{
-    const token = req.headers.authorization;
-    const { emails } = await tokenuserget(token as string);
-    const user = await authService.getmyprofile(emails);
-    sendResponse(res,{
-      statusCode: httpStatus.OK || 200,
-      success: true,
-      message: "User fetched successfully",
-      data: user,
-    });
-    
+const getauthUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers.authorization;
+      console.log(token);
+      const { emails } = await tokenuserget(token as string);
+      console.log(emails);
+      const user = await authService.getmyprofile(emails);
+      sendResponse(res, {
+        statusCode: httpStatus.OK || 200,
+        success: true,
+        message: "User fetched successfully",
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-  catch(error){
-    next(error);
-  }
-}
 );
 
 export const authColtroller = {

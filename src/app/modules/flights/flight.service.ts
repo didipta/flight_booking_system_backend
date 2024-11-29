@@ -29,13 +29,45 @@ const getAllFlights = async (
   };
 };
 
-const searchFlights = async (search: string): Promise<IFlight[] | null> => {
+const searchFlights = async (
+  origin: string,
+  date: string,
+  destination: string
+): Promise<IFlight[] | null> => {
+  const isValidDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return !isNaN(date.getTime());
+  };
+
+  const query = [];
+  const originSearch = origin.trim().replace(/^"|"$/g, "");
+  const destinationSearch = destination.trim().replace(/^"|"$/g, "");
+  const dateSearch = date.trim().replace(/^"|"$/g, "");
+
+  if (originSearch && destinationSearch) {
+    // Add regex conditions
+    query.push(
+      { origin: { $regex: originSearch, $options: "i" } },
+      { destination: { $regex: destinationSearch, $options: "i" } }
+    );
+
+    // Add date condition if search is a valid date
+    if (isValidDate(date)) {
+      const startDate = new Date(dateSearch);
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 1);
+
+      query.push({
+        date: {
+          $gte: startDate,
+          $lt: endDate,
+        },
+      });
+    }
+  }
+
   const result = await Flight.find({
-    $or: [
-      { origin: { $regex: search, $options: "i" } },
-      { destination: { $regex: search, $options: "i" } },
-      { date: { $regex: search, $options: "i" } },
-    ],
+    $and: query,
   });
 
   return result;
@@ -64,7 +96,6 @@ export const FlightService = {
   getAllFlights,
   searchFlights,
   getFlightById,
-    updateFlight,
-    delectFlight,
-    
+  updateFlight,
+  delectFlight,
 };

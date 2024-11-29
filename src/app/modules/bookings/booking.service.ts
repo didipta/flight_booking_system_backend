@@ -18,11 +18,12 @@ const createBooking = async (payload: IBooking): Promise<IBooking | null> => {
   }
   if (
     flight.date < new Date() ||
-    flight.time <
-      new Date().toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+    (flight.date === new Date() &&
+      flight.time <
+        new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }))
   ) {
     throw new ApiError(
       httpStatus.BAD_REQUEST || 400,
@@ -74,8 +75,8 @@ const getAllBookings = async (
   };
 };
 
-const userIdwish = async (userId: string): Promise<IBooking | null> => {
-  const result = await Booking.findById(userId);
+const userIdwish = async (userId: string): Promise<IBooking[] | null> => {
+  const result = (await Booking.find({ userId }).populate('flightId')) as IBooking[];
   return result;
 };
 

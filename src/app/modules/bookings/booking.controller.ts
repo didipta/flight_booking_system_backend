@@ -10,6 +10,8 @@ const creatBooking: RequestHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { ...payload } = req.body;
+      const { id } = await tokenuserget(req.headers.authorization as string);
+      payload.userId = id;
       const result = await bookingService.createBooking(payload);
       sendResponse<IBooking>(res, {
         statusCode: 201,
@@ -46,6 +48,23 @@ const getBookingById: RequestHandler = catchAsync(
     try {
       const { id } = await tokenuserget(req.headers.authorization as string);
       const result = await bookingService.getBookingById(id);
+      sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Booking fetched successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+const userIdwish: RequestHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const result = await bookingService.userIdwish(id);
       sendResponse(res, {
         statusCode: 200,
         success: true,
@@ -99,4 +118,5 @@ export default {
   getBookingById,
   updateBooking,
   deleteBooking,
+  userIdwish,
 };

@@ -42,8 +42,13 @@ const getAllFlights: RequestHandler = catchAsync(
 const searchFlights: RequestHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { search } = req.query;
-      const result = await FlightService.searchFlights(search as string);
+      const { origin, destination, date } = req.query;
+
+      const result = await FlightService.searchFlights(
+        origin as string,
+        date as string,
+        destination as string
+      );
       sendResponse(res, {
         statusCode: 200,
         success: true,

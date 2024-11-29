@@ -13,19 +13,21 @@ const loginuser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const isuserExist = await User.isUserExist(email);
 
   if (!isuserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
+    throw new ApiError(httpStatus.NOT_FOUND || 404
+      , "User does not exist");
   }
 
   if (
     isuserExist.password &&
     !(await User.isPasswordMatched(password, isuserExist.password))
   ) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Password is incorrect");
+    throw new ApiError(httpStatus.UNAUTHORIZED || 401
+      , "Password is incorrect");
   }
 
-  const { email: emails, role, _id:id } = isuserExist;
+  const { email: emails, role, _id: id } = isuserExist;
   const accessToken = jwtHelpers.createToken(
-    { emails, role , id },
+    { emails, role, id },
     config.jwt_secret as Secret,
     config.jwt_expire_time as string
   );
