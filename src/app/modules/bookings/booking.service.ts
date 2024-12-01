@@ -61,8 +61,8 @@ const getAllBookings = async (
   const { limit, page, skip } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const result = await Booking.find({}).skip(skip).limit(limit);
-
+    //populate the user and flight id
+  const result = await Booking.find({}).populate("userId").populate("flightId").skip(skip).limit(limit);
   const total = await Booking.countDocuments();
 
   return {
@@ -76,7 +76,9 @@ const getAllBookings = async (
 };
 
 const userIdwish = async (userId: string): Promise<IBooking[] | null> => {
-  const result = (await Booking.find({ userId }).populate('flightId')) as IBooking[];
+  const result = (await Booking.find({ userId }).populate(
+    "flightId"
+  )) as IBooking[];
   return result;
 };
 

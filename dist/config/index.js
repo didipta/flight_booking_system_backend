@@ -12,4 +12,5 @@ exports.default = {
     database_url: process.env.DATABASE_URL,
     bcrypt_salt: process.env.BCRYPT_SALT,
     jwt_secret: process.env.JWT_SECRET,
+    jwt_expire_time: process.env.JWT_EXPIRES_IN,
 };

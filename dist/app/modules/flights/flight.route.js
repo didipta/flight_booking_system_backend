@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FlightRouter = void 0;
+const express_1 = __importDefault(require("express"));
+const validateRequest_1 = __importDefault(require("../../middleware/validateRequest"));
+const flight_validation_1 = require("./flight.validation");
+const flight_controller_1 = require("./flight.controller");
+const auth_1 = __importDefault(require("../../middleware/auth"));
+const roleenum_1 = require("../../../interfaces/roleenum");
+const router = express_1.default.Router();
+router.post("/", (0, auth_1.default)(roleenum_1.ENUM_USER_ROLE.ADMIN), (0, validateRequest_1.default)(flight_validation_1.FlightValidation), flight_controller_1.FlightController.creatFlight);
+router.get("/", flight_controller_1.FlightController.getAllFlights);
+router.get("/search", flight_controller_1.FlightController.searchFlights);
+router.get("/:id", flight_controller_1.FlightController.getFlightById);
+router.put("/:id", (0, auth_1.default)(roleenum_1.ENUM_USER_ROLE.ADMIN), flight_controller_1.FlightController.updateFlight);
+router.delete("/:id", (0, auth_1.default)(roleenum_1.ENUM_USER_ROLE.ADMIN), flight_controller_1.FlightController.delectFlight);
+exports.FlightRouter = router;

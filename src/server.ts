@@ -1,14 +1,14 @@
-import mongoose from 'mongoose';
-import { Server } from 'http';
-import app from './app';
-import config from './config/index';
+import mongoose from "mongoose";
+import { Server } from "http";
+import app from "./app";
+import config from "./config/index";
 
-process.on('uncaughtException', error => {
+process.on("uncaughtException", (error) => {
   console.log(error);
   process.exit(1);
 });
 
-let server: Server;
+let server: Server | undefined;
 
 //database connection
 async function Database() {
@@ -23,7 +23,7 @@ async function Database() {
     console.log(`Failed to connect database`, err);
   }
 
-  process.on('unhandledRejection', error => {
+  process.on("unhandledRejection", (error) => {
     if (server) {
       server.close(() => {
         console.log(error);
@@ -36,8 +36,8 @@ async function Database() {
 }
 
 Database();
-process.on('SIGTERM', () => {
-  console.log('SIGTERM is received');
+process.on("SIGTERM", () => {
+  console.log("SIGTERM is received");
   if (server) {
     server.close();
   }
